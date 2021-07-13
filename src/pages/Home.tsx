@@ -18,24 +18,28 @@ export function Home() {
     history.push('/roons/new');
   }
 
-  async function handlejoinRoom(event:FormEvent){
-    event.preventDefault()
+  async function handlejoinRoom(event: FormEvent) {
+    event.preventDefault();
 
-    if  (roomCode.trim() === ''){
+    if (roomCode.trim() === '') {
       return;
     }
     console.log(roomCode);
-    
+
     const roomRef = await database.ref(`rooms/${roomCode}`).get();
 
-    if  (!roomRef.exists()){
-      alert('Room does not exist.')
+    if (!roomRef.exists()) {
+      alert('Room does not exist.');
       return;
     }
 
-    history.push(`/roons/${roomCode}`)
-  }
+    if (roomRef.val().endedAt) {
+      alert('Room already closed.');
+      return;
+    }
 
+    history.push(`/roons/${roomCode}`);
+  }
 
   return (
     <div id='page-auth'>
@@ -53,7 +57,12 @@ export function Home() {
           </button>
           <div className='separator'>ou entre em uma sala</div>
           <form onSubmit={handlejoinRoom}>
-            <input type='text' placeholder='Digite o código da sala' onChange={event => setRoomCode(event.target.value)} value={roomCode}/>
+            <input
+              type='text'
+              placeholder='Digite o código da sala'
+              onChange={(event) => setRoomCode(event.target.value)}
+              value={roomCode}
+            />
             <Button type='submit'>Entrar na sala</Button>
           </form>
         </div>
